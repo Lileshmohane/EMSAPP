@@ -12,11 +12,11 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.lileshmohane.appems",       
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "package": "com.AppEms",
-        "versionCode": 1
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
     },
@@ -39,6 +39,17 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "sdkVersion": "53.0.0",
+    "platforms": ["ios", "android", "web"],
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "74623636"     
+      },
+      "router": {}
     }
   }
 }
