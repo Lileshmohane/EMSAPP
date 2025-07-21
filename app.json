@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AppEms",
-    "slug": "emsapp",
+    "slug": "appems",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
