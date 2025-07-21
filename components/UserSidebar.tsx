@@ -1,11 +1,28 @@
 import { useAuth } from '@/components/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const UserSidebar = ({ onClose }: { onClose?: () => void }) => {
   const { logout, employeeId } = useAuth();
   const router = useRouter();
+  const [userName, setUserName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchName = async () => {
+      if (employeeId) {
+        try {
+          const res = await fetch(`http://192.168.1.26:8080/api/employee/${employeeId}`);
+          const data = await res.json();
+          setUserName(`${data.firstName || ''} ${data.lastName || ''}`.trim());
+        } catch {
+          setUserName(null);
+        }
+      }
+    };
+    fetchName();
+  }, [employeeId]);
 
   const handleLogout = async () => {
     await logout();
@@ -13,7 +30,7 @@ const UserSidebar = ({ onClose }: { onClose?: () => void }) => {
   };
 
   const handleNavigate = (route: string) => {
-    router.replace(route);
+    router.replace(route as any);
     if (onClose) {
       onClose();
     }
@@ -35,7 +52,9 @@ const UserSidebar = ({ onClose }: { onClose?: () => void }) => {
       <View>
         <View style={styles.header}>
           <Text style={styles.headerText}>User Panel</Text>
-          {employeeId && <Text style={styles.subHeaderText}>ID: {employeeId}</Text>}
+          {userName ? (
+            <Text style={styles.subHeaderText}>{userName}</Text>
+          ) : null}
         </View>
         <View style={styles.menu}>
           {menuItems.map((item, index) => (
@@ -65,16 +84,30 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 24,
+    alignItems: 'center',
+    height: 120,
+    justifyContent: 'center',
+  },
+  userImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
   headerText: {
     color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 2,
   },
   subHeaderText: {
     color: '#a0aec0',
-    fontSize: 14,
-    marginTop: 4,
+    fontSize: 13,
+    marginTop: 0,
+    marginBottom: 2,
+    paddingVertical: 0,
   },
   menu: {
     flexGrow: 1,

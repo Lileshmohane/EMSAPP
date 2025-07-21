@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../components/AuthContext';
 
-axios.defaults.baseURL = 'http://192.168.1.12:8080';
+axios.defaults.baseURL = 'http://192.168.1.26:8080';
 
 const EmployeeTask = () => {
   const [tasksData, setTasksData] = useState([]);
@@ -154,12 +154,20 @@ const EmployeeTask = () => {
           progress = 0;
           completedAt = null;
       }
+      let dueDate = taskToUpdate.dueDate;
+      if (!dueDate) {
+        // fallback to today with time
+        const today = new Date();
+        dueDate = today.toISOString().slice(0, 10) + 'T23:59:00';
+      } else if (!dueDate.includes('T')) {
+        dueDate = dueDate + 'T23:59:00';
+      }
       const updates = {
         id: taskId,
         title: taskToUpdate.title,
         description: taskToUpdate.description,
         priority: taskToUpdate.priority,
-        dueDate: taskToUpdate.dueDate.includes('T') ? taskToUpdate.dueDate : `${taskToUpdate.dueDate}T23:59:00`,
+        dueDate: dueDate,
         assignedTo: taskToUpdate.assignedTo,
         completed: apiCompleted,
         progress: apiProgress,

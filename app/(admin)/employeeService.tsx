@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://192.168.1.12:8080/api';
+const API_BASE_URL = 'http://192.168.1.26:8080/api';
 
 // Example: import a local image for default avatar
 // import defaultAvatar from '../../assets/images/default-avatar.png';
@@ -21,6 +21,7 @@ export interface Employee {
   employeeNumber?: string;
   username?: string;
   avatar?: string; // or require('../../assets/images/default-avatar.png')
+  password?: string; // <-- Added for edit/create
 }
 
 class EmployeeService {

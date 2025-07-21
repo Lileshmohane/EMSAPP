@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   mobileContent: {
-    paddingTop: 70, // Match new header height
+    paddingTop: 90, // Match new header height
   },
   mobileHeader: {
     position: 'absolute',
@@ -88,12 +88,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 10,
-    height: 70,
+    height: 90,
     backgroundColor: '#0a7ea4',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 12, // Reduced for compactness
+    paddingTop: 20,
     elevation: 6,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerLogo: {
-    width: 44,
-    height: 44,
+    width: 64,
+    height: 64,
     marginRight: 12,
   },
   headerTitle: {

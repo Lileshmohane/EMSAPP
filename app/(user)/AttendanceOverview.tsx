@@ -19,7 +19,7 @@ import {
 import { PieChart } from 'react-native-chart-kit';
 import { useAuth } from '../../components/AuthContext';
 
-const API_BASE_URL = 'http://192.168.1.12:8080/api';
+const API_BASE_URL = 'http://192.168.1.26:8080/api';
 
 interface AttendanceRecord {
   id: string;
@@ -492,7 +492,6 @@ const AttendanceOverview = () => {
       absent: attendanceData.filter(a => a.status === 'Absent').length,
       late: attendanceData.filter(a => a.remarks.includes('Late')).length,
       overtime: attendanceData.filter(a => a.remarks.includes('Overtime')).length,
-      wfh: attendanceData.filter(a => a.remarks.includes('WFH')).length,
     };
     return totals;
   };
@@ -649,10 +648,6 @@ const AttendanceOverview = () => {
           <Text style={styles.statTitle}>Absent</Text>
           <Text style={styles.statValue}>{totals.absent}</Text>
         </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statTitle}>Work from Home</Text>
-          <Text style={styles.statValue}>{totals.wfh}</Text>
-        </View>
       </View>
 
       {/* Attendance Summary Chart */}
@@ -679,20 +674,14 @@ const AttendanceOverview = () => {
         <Text style={styles.sectionTitle}>Attendance History</Text>
           <View style={styles.viewControls}>
             <View style={styles.viewToggle}>
+              {/* Only Table View is available, so remove calendar toggle */}
               <TouchableOpacity 
-                style={[styles.toggleButton, viewMode === 'table' ? styles.activeToggle : null]} 
-                onPress={() => setViewMode('table')}
+                style={[styles.toggleButton, styles.activeToggle]} 
+                onPress={() => {}} // No-op
+                disabled
               >
-                <Text style={[styles.toggleText, viewMode === 'table' ? styles.activeToggleText : null]}>
+                <Text style={[styles.toggleText, styles.activeToggleText]}>
                   Table View
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.toggleButton, viewMode === 'calendar' ? styles.activeToggle : null]} 
-                onPress={() => setViewMode('calendar')}
-              >
-                <Text style={[styles.toggleText, viewMode === 'calendar' ? styles.activeToggleText : null]}>
-                  Calendar View
                 </Text>
               </TouchableOpacity>
             </View>
@@ -749,47 +738,41 @@ const AttendanceOverview = () => {
           </View>
         )}
 
-        {viewMode === 'table' ? (
-          <View style={styles.tableView}>
-        <View style={styles.tableHeader}>
-              <TouchableOpacity style={styles.headerCell} onPress={() => handleSort('date')}>
-                <Text style={styles.headerCellText}>Date</Text>
-                {sortConfig.key === 'date' && (
-                  <MaterialIcons 
-                    name={sortConfig.direction === 'asc' ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} 
-                    size={16} 
-                    color="#007AFF" 
-                  />
-                )}
-              </TouchableOpacity>
-              <Text style={styles.headerCellText}>Check In</Text>
-              <Text style={styles.headerCellText}>Check Out</Text>
-              <Text style={styles.headerCellText}>Hours</Text>
-              <TouchableOpacity style={styles.headerCell} onPress={() => handleSort('status')}>
-                <Text style={styles.headerCellText}>Status</Text>
-                {sortConfig.key === 'status' && (
-                  <MaterialIcons 
-                    name={sortConfig.direction === 'asc' ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} 
-                    size={16} 
-                    color="#007AFF" 
-                  />
-                )}
-              </TouchableOpacity>
-              <Text style={styles.headerCellText}>Remarks</Text>
+        <View style={styles.tableView}>
+          <View style={styles.tableHeader}>
+            <TouchableOpacity style={styles.headerCell} onPress={() => handleSort('date')}>
+              <Text style={styles.headerCellText}>Date</Text>
+              {sortConfig.key === 'date' && (
+                <MaterialIcons 
+                  name={sortConfig.direction === 'asc' ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} 
+                  size={16} 
+                  color="#007AFF" 
+                />
+              )}
+            </TouchableOpacity>
+            <Text style={styles.headerCellText}>Check In</Text>
+            <Text style={styles.headerCellText}>Check Out</Text>
+            <Text style={styles.headerCellText}>Hours</Text>
+            <TouchableOpacity style={styles.headerCell} onPress={() => handleSort('status')}>
+              <Text style={styles.headerCellText}>Status</Text>
+              {sortConfig.key === 'status' && (
+                <MaterialIcons 
+                  name={sortConfig.direction === 'asc' ? 'keyboard-arrow-up' : 'keyboard-arrow-down'} 
+                  size={16} 
+                  color="#007AFF" 
+                />
+              )}
+            </TouchableOpacity>
+            <Text style={styles.headerCellText}>Remarks</Text>
+          </View>
+          <FlatList
+            data={filteredData}
+            renderItem={renderAttendanceItem}
+            keyExtractor={item => item.id}
+            ListEmptyComponent={!loading ? <Text style={styles.noData}>No records found matching your filters.</Text> : null}
+            scrollEnabled={false}
+          />
         </View>
-        <FlatList
-              data={filteredData}
-          renderItem={renderAttendanceItem}
-          keyExtractor={item => item.id}
-              ListEmptyComponent={!loading ? <Text style={styles.noData}>No records found matching your filters.</Text> : null}
-              scrollEnabled={false}
-        />
-          </View>
-        ) : (
-          <View style={styles.calendarView}>
-            <Text style={styles.comingSoon}>Calendar view will be implemented soon.</Text>
-          </View>
-        )}
       </View>
 
       {/* Footer */}
@@ -806,105 +789,102 @@ const AttendanceOverview = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f6ff',
-    padding: 16,
+    backgroundColor: '#f4f8fb',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#1a1a1a',
+    color: '#0a7ea4',
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
-  section: {
-    marginBottom: 24,
+  error: {
+    color: '#c62828',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  employeeCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 2,
-    shadowColor: '#000',
+    borderRadius: 18,
+    padding: 20,
+    margin: 16,
+    marginBottom: 8,
+    shadowColor: '#0a7ea4',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#1a1a1a',
-  },
-  employeeCard: {
-    marginBottom: 24,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    color: '#0a7ea4',
+    marginBottom: 10,
   },
   employeeDetails: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   detailRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   detailLabel: {
-    fontSize: 14,
+    fontWeight: '600',
     color: '#666',
-    fontWeight: '500',
+    width: 110,
   },
   detailValue: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '600',
+    color: '#222',
+    fontWeight: '500',
   },
   timeAction: {
+    marginTop: 10,
     alignItems: 'center',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
   },
   currentTime: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   timeText: {
-    fontSize: 18,
+    marginLeft: 6,
+    fontSize: 16,
+    color: '#0a7ea4',
     fontWeight: 'bold',
-    color: '#007AFF',
-    marginLeft: 8,
   },
   elapsedTime: {
-    marginBottom: 12,
+    marginBottom: 6,
   },
   elapsedText: {
-    fontSize: 14,
     color: '#666',
+    fontSize: 14,
   },
   punchButton: {
-    paddingHorizontal: 32,
     paddingVertical: 12,
-    borderRadius: 25,
-    marginBottom: 8,
+    paddingHorizontal: 32,
+    borderRadius: 24,
+    marginTop: 8,
+    marginBottom: 4,
+    alignItems: 'center',
+    elevation: 2,
   },
   punchIn: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#00C851',
   },
   punchOut: {
     backgroundColor: '#F44336',
   },
   punchButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: 'bold',
+    fontSize: 16,
   },
   statusMessage: {
-    fontSize: 14,
-    color: '#4CAF50',
+    marginTop: 6,
+    color: '#0a7ea4',
+    fontWeight: '600',
     textAlign: 'center',
   },
   lateMessage: {
@@ -912,31 +892,35 @@ const styles = StyleSheet.create({
   },
   quickStats: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginHorizontal: 8,
+    marginTop: 8,
+    marginBottom: 8,
   },
   statCard: {
-    flex: 1,
+    minWidth: '45%',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginHorizontal: 4,
+    borderRadius: 14,
+    margin: 4,
+    paddingVertical: 18,
     alignItems: 'center',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    elevation: 2,
+    shadowColor: '#0a7ea4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
   },
   statTitle: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#666',
+    fontWeight: '500',
     marginBottom: 4,
   },
   statValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#0a7ea4',
   },
   historyHeader: {
     flexDirection: 'row',
@@ -1084,11 +1068,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     fontStyle: 'italic',
-  },
-  error: {
-    color: '#c62828',
-    marginBottom: 16,
-    textAlign: 'center',
   },
   debugInfo: {
     backgroundColor: '#f8f9fa',

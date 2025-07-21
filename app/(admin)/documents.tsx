@@ -1,1 +1,1 @@
-export { default } from './documents.web';
+export { default } from './document';

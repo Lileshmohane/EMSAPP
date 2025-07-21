@@ -1,16 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text, TextInput, TouchableOpacity,
-  View
+    ActivityIndicator,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text, TextInput, TouchableOpacity,
+    View
 } from 'react-native';
 import { useAuth, UserRole } from '../../components/AuthContext';
 
-const API_URL = 'http://192.168.1.12:8080/api/auth/login';
+const API_URL = 'http://192.168.1.26:8080/api/auth/login';
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -20,6 +21,7 @@ const LoginScreen = () => {
   const [role, setRole] = useState<UserRole>('EMPLOYEE');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -77,13 +79,18 @@ const LoginScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+          <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="grey" />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.roleContainer}>
         <TouchableOpacity
@@ -108,9 +115,6 @@ const LoginScreen = () => {
         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Sign In</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/(auth)/register')} style={styles.switchLink}>
-        <Text style={styles.linkText}>Don't have an account? <Text style={{fontWeight: 'bold'}}>Register</Text></Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -149,6 +153,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderColor: '#ddd',
     borderWidth: 1,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    marginBottom: 12,
+    borderColor: '#ddd',
+    borderWidth: 1,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 16,
+    fontSize: 16,
+  },
+  eyeIcon: {
+    padding: 16,
   },
   roleContainer: {
     flexDirection: 'row',

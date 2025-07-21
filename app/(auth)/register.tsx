@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useAuth, UserRole } from '../../components/AuthContext';
 
-const API_URL = 'http://192.168.1.12:8080/api/auth/register';
+const API_URL = 'http://192.168.1.42:8080/api/auth/register';
 
 const RegisterScreen = () => {
   const router = useRouter();
@@ -97,9 +97,6 @@ const RegisterScreen = () => {
         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Register</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push('/(auth)/login')} style={styles.switchLink}>
-        <Text style={styles.linkText}>Already have an account? <Text style={{fontWeight: 'bold'}}>Sign In</Text></Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };

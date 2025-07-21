@@ -34,7 +34,6 @@ const AdminSidebar = ({ onClose }: { onClose?: () => void }) => {
       <View>
         <View style={styles.header}>
           <Text style={styles.headerText}>Admin Panel</Text>
-          {employeeId && <Text style={styles.subHeaderText}>ID: {employeeId}</Text>}
         </View>
         <View style={styles.menu}>
           {menuItems.map((item, index) => (
